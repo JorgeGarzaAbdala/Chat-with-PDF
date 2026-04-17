@@ -26,9 +26,7 @@ let chatHistory = [];
 let chunks = [];
 let pdfPath = "";
 
-// =========================
 // PDF SPLITTER
-// =========================
 function splitText(text, size = 800) {
   const words = text.split(" ");
   const result = [];
@@ -40,9 +38,7 @@ function splitText(text, size = 800) {
   return result;
 }
 
-// =========================
 // SIMILARITY (cosine simple)
-// =========================
 function similarity(a, b) {
   const setA = new Set(a.toLowerCase().split(" "));
   const setB = new Set(b.toLowerCase().split(" "));
@@ -92,7 +88,7 @@ app.post("/upload", (req, res) => {
 
       const text = data.text;
 
-      // 🔥 CHUNKING
+      // CHUNKING
       chunks = splitText(text, 1200);
 
       console.log("Chunks created:", chunks.length);
@@ -108,6 +104,7 @@ app.post("/upload", (req, res) => {
     }
   });
 });
+
 // RESET
 app.get("/reset", (req, res) => {
   chatHistory = [];
@@ -120,12 +117,13 @@ app.get("/reset", (req, res) => {
     pdfPath: null,
   });
 });
+
 // ASK
 app.post("/ask", async (req, res) => {
   const question = req.body.question;
 
   try {
-    // 🔥 1. encontrar chunks relevantes
+    // Relevant chunks
     const scored = chunks.map(chunk => ({
       chunk,
       score: similarity(question, chunk),
@@ -137,7 +135,7 @@ app.post("/ask", async (req, res) => {
       .map(x => x.chunk)
       .join("\n\n");
 
-    // 🔥 2. prompt PRO
+    // PROMPT
     const prompt = `
 You are a PDF assistant.
 
@@ -176,9 +174,7 @@ ${question}
   }
 });
 
-// =========================
 // SERVER
-// =========================
 app.listen(port, () => {
   console.log("Server running on", port);
 });
